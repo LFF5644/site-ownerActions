@@ -2,7 +2,19 @@
 	const {
 		importHead,
 	}=globals.functions;
-?>
+	const services={
+		account: service_require("server/account/account.new"),
+	}
+	const accountInfo=services.account.authUserByInput(input);
+	const permission=services.account.hasAccountRankAttr({
+		username: accountInfo.data.account.username,
+		rankAttr:"ownerActions-use",
+	});
+
+	if(!accountInfo.allowed||!permission){// Kick user without account & user without permission
+		throw 401;
+	}
+?><!-- Coded By LFF5644 view code on GitHub.com/LFF5644/site-ownerActions -->
 <!DOCTYPE html>
 <html>
 	<head>
