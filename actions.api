@@ -1,0 +1,68 @@
+<?
+	const services={
+		account: service_require("server/account/account.new"),
+	}
+	const accountInfo=services.account.authUserByInput(input);
+	if(!accountInfo.allowed){// Kick user without account or wrong token
+		throw 401;
+	}
+	const account=accountInfo.data.account;
+	const permission=services.account.hasAccountRankAttr({
+		username: account.username,
+		rankAttr:"ownerActions-use",
+	});
+
+	if(!permission){// Kick user without permissions
+		throw 401;
+	}
+	let result={};
+	const {
+		want,
+	}=input;
+	if(want===undefined){throw 400}
+	run:if(want.toLowerCase()=="run"){
+		const {
+			actionname,
+			must,
+		}=input;
+		const action=actions[actionname];
+		if(action==undefined){
+			result={
+				code:"cant find action",
+				errormsg:"Aktion konnte nicht gefunden werden!",
+			}
+			break run;
+		}
+		if(typeof(action)!="object"){
+			const actionResult=action();
+			result={
+				code:"ok",
+				legacy:true,
+				result: actionResult,
+			};
+			break run;
+		}else{
+			if(action.enabled||must){
+				const actionResult=action.action();
+				result={
+					code:"ok",
+					legacy:false,
+					result: actionResult,
+				}
+				break run;
+			}else{
+				result={
+					code:"action not enabled",
+					errormsg:"Aktion ist nicht Eingeschaltet",
+				};
+				break run;
+			}
+		}
+	}
+	response.setHeader("Content-Type","application/json");
+?><?=
+	typeof(result)=="object"?
+		JSON.stringify(result)
+	:
+		`{"data":"${Buffer.from(result,"utf-8").toString("base64")}","coding":"base64"}`
+?>
