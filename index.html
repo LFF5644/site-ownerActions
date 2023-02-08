@@ -15,28 +15,18 @@
 	</head>
 	<body>
 		<h1>Actions</h1>
-		
 		<?{
 			const tabs="\t\t";
-			//let html="";
+			let html="";
 			let action;
 			for(action of Object.keys(actions)){
 				if(typeof(actions[action])!="object"){
-					//html+=tabs+"<p>"+action+" (old)</p>\n";
-					?>
-						<p><?=action?> (old)</p>
-					<?
+					html+=tabs+"<p>"+action+" (old)</p>\n";
 				}else{
-					//html+=tabs+`<p style="color:${actions[action].enabled?"green":"red"}">${actions[action].display} (${action}), service: ${actions[action].service}</p>\n`;
-					?>
-						<p 
-							style="color:<?=actions[action].enabled?"green":"red"?>"
-						>
-							<?=actions[action].display?> (<?=action?>)
-						</p>
-					<?
+					html+=tabs+`<p style="color:${actions[action].enabled?"green":"red"}">${actions[action].display} (${action}), service: ${actions[action].service}</p>\n`;
 				}
 			}
+			?><?=html?><?
 		}?>
 	</body>
 </html>
