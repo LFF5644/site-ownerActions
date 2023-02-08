@@ -6,12 +6,16 @@
 		account: service_require("server/account/account.new"),
 	}
 	const accountInfo=services.account.authUserByInput(input);
+	if(!accountInfo.allowed){// Kick user without account or wrong token
+		throw 401;
+	}
+	const account=accountInfo.data.account;
 	const permission=services.account.hasAccountRankAttr({
-		username: accountInfo.data.account.username,
+		username: account.username,
 		rankAttr:"ownerActions-use",
 	});
 
-	if(!accountInfo.allowed||!permission){// Kick user without account & user without permission
+	if(!permission){// Kick user without permissions
 		throw 401;
 	}
 ?><!-- Coded By LFF5644 view code on GitHub.com/LFF5644/site-ownerActions -->
